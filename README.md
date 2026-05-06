@@ -1,6 +1,6 @@
 # Typing Speed Test
 
-Ung dung Flask nho de kiem tra toc do go. Backend phat mot `typing_state`
+Ung dung Flask nho de kiem tra toc do go. Backend phat mot `state`
 kem prompt, frontend gui lai state do khi submit, va server dung state nay de
 tinh WPM, accuracy va trang thai hoan thanh.
 
@@ -10,8 +10,8 @@ gia.
 ## Tinh nang
 
 - Frontend typing test bang HTML, CSS, JavaScript.
-- API `/api/prompt` tra ve prompt va `typing_state`.
-- API `/api/typing` nhan `typing_state`, `typed_text`, `duration_seconds`,
+- API `/api/prompt` tra ve prompt va `state`.
+- API `/api/typing` nhan `state`, `typed_text`, `duration_seconds`,
   sau do tra ve ket qua typing.
 - Endpoint `/health` de kiem tra app dang chay.
 - File `render.yaml` va `Procfile` de deploy tren Render.
@@ -31,7 +31,7 @@ POST /api/typing
 Content-Type: application/json
 
 {
-  "typing_state": "<encoded-state>",
+  "state": "<encoded-state>",
   "typed_text": "hello world",
   "duration_seconds": 30
 }

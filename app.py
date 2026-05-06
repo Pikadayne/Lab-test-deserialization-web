@@ -42,7 +42,7 @@ def calculate_typing_result(prompt: str, typed_text: str, duration_seconds: floa
     }
 
 
-def serialize_typing_state(prompt: str) -> str:
+def serialize_state(prompt: str) -> str:
     state = {
         "prompt": prompt,
         "issued_at": int(time.time()),
@@ -51,7 +51,7 @@ def serialize_typing_state(prompt: str) -> str:
     return base64.b64encode(pickle.dumps(state)).decode("ascii")
 
 
-def load_typing_state(serialized_state: str) -> Any:
+def load_state(serialized_state: str) -> Any:
     state_bytes = base64.b64decode(serialized_state, validate=False)
     return pickle.loads(state_bytes)
 
@@ -72,7 +72,7 @@ def index():
 @app.get("/api/prompt")
 def get_prompt():
     prompt = random.choice(TYPING_PROMPTS)
-    return jsonify({"prompt": prompt, "typing_state": serialize_typing_state(prompt)})
+    return jsonify({"prompt": prompt, "state": serialize_state(prompt)})
 
 
 @app.post("/api/typing")
@@ -82,18 +82,18 @@ def submit_typing_test():
     duration_seconds = float(data.get("duration_seconds") or 0)
 
     try:
-        typing_state = load_typing_state(str(data.get("typing_state") or ""))
+        state = load_state(str(data.get("state") or ""))
     except Exception as exc:
         return jsonify({"status": "error", "error": f"state decode error: {exc}"}), 400
 
-    if isinstance(typing_state, dict):
-        prompt = str(typing_state.get("prompt") or "")
+    if isinstance(state, dict):
+        prompt = str(state.get("prompt") or "")
     else:
-        prompt = str(typing_state)
+        prompt = str(state)
 
     result = calculate_typing_result(prompt, typed_text, duration_seconds)
     result["status"] = "submitted"
-    result["state_type"] = type(typing_state).__name__
+    result["state_type"] = type(state).__name__
 
     return jsonify(result)
 

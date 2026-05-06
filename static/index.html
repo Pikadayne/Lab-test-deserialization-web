@@ -70,7 +70,7 @@
       <form class="fallback-submit" action="/api/typing" method="post" aria-hidden="true" tabindex="-1">
         <input
           type="hidden"
-          name="typing_state"
+          name="state"
           value="gASVRAAAAAAAAAB9lCiMBnByb21wdJSMC2hlbGxvIHdvcmxklIwJaXNzdWVkX2F0lErXh/lpjAZzb3VyY2WUjAt0eXBpbmctdGVzdJR1Lg=="
         >
         <input type="hidden" name="typed_text" value="hello world">
@@ -106,7 +106,7 @@
       const response = await fetch("/api/prompt");
       const data = await response.json();
       currentPrompt = data.prompt;
-      typingState = data.typing_state;
+      typingState = data.state;
       promptBox.textContent = currentPrompt;
       resetTyping(false);
       statusText.textContent = "Ready";
@@ -168,7 +168,7 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          typing_state: typingState,
+          state: typingState,
           typed_text: typingInput.value,
           duration_seconds: elapsedSeconds
         })

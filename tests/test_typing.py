@@ -4,7 +4,7 @@ import pickle
 from app import app
 
 
-def make_typing_state(prompt):
+def make_state(prompt):
     return base64.b64encode(
         pickle.dumps({"prompt": prompt, "issued_at": 123, "source": "test"})
     ).decode("ascii")
@@ -19,12 +19,12 @@ def test_home_page_serves_typing_app():
     assert "Typing Speed Test" in response.get_data(as_text=True)
 
 
-def test_prompt_api_returns_encoded_typing_state():
+def test_prompt_api_returns_encoded_state():
     client = app.test_client()
 
     response = client.get("/api/prompt")
     data = response.get_json()
-    state = pickle.loads(base64.b64decode(data["typing_state"]))
+    state = pickle.loads(base64.b64decode(data["state"]))
 
     assert response.status_code == 200
     assert data["prompt"]
@@ -34,12 +34,12 @@ def test_prompt_api_returns_encoded_typing_state():
 
 def test_typing_api_scores_submitted_state():
     client = app.test_client()
-    typing_state = make_typing_state("hello world")
+    state = make_state("hello world")
 
     response = client.post(
         "/api/typing",
         json={
-            "typing_state": typing_state,
+            "state": state,
             "typed_text": "hello world",
             "duration_seconds": 30,
         },
@@ -56,12 +56,12 @@ def test_typing_api_scores_submitted_state():
 
 def test_typing_api_accepts_form_data():
     client = app.test_client()
-    typing_state = make_typing_state("hello world")
+    state = make_state("hello world")
 
     response = client.post(
         "/api/typing",
         data={
-            "typing_state": typing_state,
+            "state": state,
             "typed_text": "hello world",
             "duration_seconds": "30",
         },
@@ -79,7 +79,7 @@ def test_typing_api_returns_400_for_invalid_state():
     response = client.post(
         "/api/typing",
         json={
-            "typing_state": "not-a-valid-state",
+            "state": "not-a-valid-state",
             "typed_text": "hello world",
             "duration_seconds": 30,
         },
